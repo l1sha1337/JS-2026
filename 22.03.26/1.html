@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<button id="myButton">Нажми меня</button>
+<text id="oldText">Старый текст</text>
+<script>
+  const button = document.getElementById('myButton');
+
+  button.addEventListener('click', function() {
+    alert('Кнопка нажата!');
+    document.getElementById('oldText').innerText = 'Новый текст!';
+  });
+</script>
