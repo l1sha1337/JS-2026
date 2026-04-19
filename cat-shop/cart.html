@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Твои котики:</h1>
+    <div id="cart-list"></div>
+    <a href="main.html">Назад</a>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('cart-list').innerHTML = items.map(cat => `
+            <div class="card">
+                <img src="${cat.img}">
+                <h2>${cat.name}</h2>
+            </div>
+        `).join('');
+    </script>
+</body>
