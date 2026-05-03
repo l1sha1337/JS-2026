@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Корзина — Приют котиков</title>
+</head>
+<body>
+    <nav>
+        <a href="main.html">Главная</a>
+        <a href="cart.html">Корзина</a>
+        <a href="main.html#footer">О приюте</a>
+    </nav>
+
+    <h1>Твои котики:</h1>
+    <div id="cart-list"></div>
+    <a href="main.html">← Назад к выбору</a>
+
+    <footer id="footer">
+        <p>Приют котиков — дарим тепло и уют с 2026 года!</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let list = document.getElementById('cart-list');
+        for (let i = 0; i < cart.length; i++) {
+            let cat = cart[i];
+            list.innerHTML += `
+                <div class="card">
+                    <img src="${cat.img}">
+                    <h2>${cat.name}</h2>
+                    <button onclick="removeFromCart(${i})">Забрать домой</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
