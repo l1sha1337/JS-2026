@@ -1,67 +1,128 @@
+//Сохранение кота в памяти
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let gone = JSON.parse(localStorage.getItem('gone')) || [];
+let custom = JSON.parse(localStorage.getItem('custom')) || [];
 
+//Добавление кота в корзину
 function addToCart(name, img, event) {
-    let alreadyInCart = false;
     for (let i = 0; i < cart.length; i++) {
-        if (cart[i].name === name) alreadyInCart = true;
+        if (cart[i].name === name) {
+            alert('Этот котик уже в корзине!');
+            return;
+        }
     }
-    
-    if (alreadyInCart) {
-        alert('Этот котик уже в корзине!');
-        return;
-    }
-
     cart.push({ name: name, img: img });
     localStorage.setItem('cart', JSON.stringify(cart));
-    
-    let card = event.target.closest('.card');
-    card.style.display = 'none';
-    
+    event.target.closest('.card').style.display = 'none';
     updateCount();
 }
 
-function updateCount() {
-    let countSpan = document.getElementById('count');
-    if (countSpan) countSpan.innerText = cart.length;
-}
-
+//Забрать кота из корзины 
 function removeFromCart(index) {
-    let cat = cart[index];
+    gone.push(cart[index].name);
     cart.splice(index, 1);
     localStorage.setItem('cart', JSON.stringify(cart));
-    
-    gone.push(cat.name);
     localStorage.setItem('gone', JSON.stringify(gone));
-    
-    alert('Теперь у котика есть дом, ура!');
+    alert('Котик теперь дома!');
     location.reload();
 }
 
+//Добавление новых котов 
 function restockCats() {
-    localStorage.removeItem('cart');
-    localStorage.removeItem('gone');
-    alert('Привезли новых котиков!');
+    localStorage.clear();
     location.reload();
 }
 
-let cards = document.querySelectorAll('.card');
-for (let i = 0; i < cards.length; i++) {
-    let name = cards[i].querySelector('h2').innerText;
+//Добавить своего кота
+function addNewCat() {
+    let name = document.getElementById('cat-name').value.trim();
+    let img = document.getElementById('cat-img').value.trim();
     
-    let inCart = false;
-    for (let j = 0; j < cart.length; j++) {
-        if (cart[j].name === name) inCart = true;
+    if (!name || !img) {
+        alert('Заполни имя и ссылку на фото!');
+        return;
     }
+    
+    custom.push({ name: name, img: img });
+    localStorage.setItem('custom', JSON.stringify(custom));
+    location.reload();
+}
+
+//Обновление счетчика
+function updateCount() {
+    let count = document.getElementById('count');
+    if (count) count.innerText = cart.length;
+}
+
+//Прячем котов из списка и из корзины
+document.querySelectorAll('.card').forEach(function(card) {
+    if (card.id === 'add-cat-form') return;
+    let name = card.querySelector('h2').innerText;
+    
+    let inCart = cart.some(function(c) { return c.name === name; });
     
     if (inCart || gone.includes(name)) {
-        cards[i].style.display = 'none';
+        card.style.display = 'none';
+    }
+});
+
+//При загрузке:показываем своих котов
+custom.forEach(function(cat) {
+    if (gone.includes(cat.name)) return;
+    if (cart.some(function(c) { return c.name === cat.name; })) return;
+    
+    let div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+        <img src="${cat.img}">
+        <h2>${cat.name}</h2>
+        <button onclick="addToCart('${cat.name}', '${cat.img}', event)">Взять даром</button>
+    `;
+    document.querySelector('.cats-container').appendChild(div);});
+
+//Показать кнопку поставки если нужно
+if (gone.length > 0 || cart.length > 0) {
+    let btn = document.getElementById('restock-btn');
+    if (btn) btn.style.display = 'block';
+}
+
+//Тёмная тема
+let theme = localStorage.getItem('theme');
+if (theme === 'dark') document.body.classList.add('dark');
+
+function toggleTheme() {
+    document.body.classList.toggle('dark');
+    if (document.body.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+    } else {
+        localStorage.setItem('theme', 'light');
+    }
+}
+//Светлая тема
+function toggleTheme() {
+    document.body.classList.toggle('dark');
+    let btn = document.getElementById('theme-btn');
+    
+    if (document.body.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+        btn.style.color = 'white';
+        btn.textContent = '☀️';
+    } else {
+        localStorage.setItem('theme', 'light');
+        btn.style.color = 'black';
+        btn.textContent = '🌙';
     }
 }
 
-let restockBtn = document.getElementById('restock-btn');
-if (restockBtn && (gone.length > 0 || cart.length > 0)) {
-    restockBtn.style.display = 'block';
+//Цвет кнопки темы при загрузке
+let btn = document.getElementById('theme-btn');
+if (btn) {
+    if (theme === 'dark') {
+        btn.style.color = 'white';
+        btn.textContent = '☀️';
+    } else {
+        btn.style.color = 'black';
+        btn.textContent = '🌙';
+    }
 }
-
 updateCount();
